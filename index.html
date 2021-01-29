@@ -13,21 +13,22 @@
   <div id="app" v-cloak>  
     <message-list :items="messages" @delete="deleteMessage"></message-list>
     <form @submit.prevent="addMessage">
-      <textarea v-model="newMessage" placeholder="Leave a message" v-focus></textarea>
+      <textarea id="newMessage" v-model="newMessage" placeholder="Leave a message" v-focus></textarea>
       <div><button :disabled="addDisabled" type="submit">Add</button></div>
-    </form>
+    </form>    
   </div>
-  <script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>  
+  <script src="../vue.js"></script>  
   <script type="module">
-    import MessageList from './components/MessageList.js'
-    import lifecyleLogger from './mixins/lifecycle-logger.mixin.js'
+    import MessageList from './components/MessageList.js'    
+    import LifecycleLogger from './plugins/lifecycle-logger.plugin.js'
     import './directives/focus.directive.js'
     import './filters/datetime.filter.js'
 
-    let vm = new Vue({
+    Vue.use(LifecycleLogger, {beforeMount: false})
+
+    window.vm = new Vue({
       el: '#app',
       name: 'MessagesApp',
-      mixins: [lifecyleLogger],
       data: {
         messages: [],
         newMessage: ''
@@ -36,7 +37,7 @@
         addDisabled () {
           return this.messages.length >= 10 || this.newMessage.length > 50
         }
-      },    
+      },
       components: {
         MessageList
       },
