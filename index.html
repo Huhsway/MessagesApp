@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Messages App</title>
+  <style> <!--v-cloak를 통해서 Vue가 생성한 새로운 DOM으로 대체되기 전까지 템플릿 마크업이 나타나는 현상 방지-->
+  [v-cloak] {display: none;}
+  body > div {width: 500px; margin: 0 auto;}
+  textarea {width: 100%;}
+  ul {padding: 0 15px;}
+  </style>
+</head>
+<body>
+<div id="app" v-cloak>
+  <ul>
+    <li v-for="message in messages">
+      {{ message.text }} - {{ message.createdAt }} <!--createdAt 프로퍼티는 새로운 메시지를 저장할 때 추가하는 Data 객체다.-->
+      <button @click="deleteMessage(message)">X</button>
+    </li>
+  </ul>
+  <form @submit.prevent="addMessage"> <!--prevent는 브라우저가 실제로 폼을 제출하지 않도록 Vuejs에 event.preventDeafult() 호출을 지시하는 수식어-->
+    <textarea v-model="newMessage" placeholder="Leave a message">
+      </textarea><!--v-model 지시자로 textarea 요소와 data 객체의 newMessage 프로퍼티 사이에 양방향 바인딩 생성 이 방법으로 textarea 요소의 값이 변경될 때마다 newMessage가 자동으로 업데이트 된다.-->
+    <div><button :disabled="addDisabled" type="submit">Add</button></div> <!--v-bind 약자 :-->
+  </form>
+</div>
+<script src="https://unpkg.com/vue@2.5.13/dist/vue.js"></script>
+<script>
+  let vm = new Vue({
+    el: '#app',
+    data: { // 객체 리터럴을 사용해 data 객체 추가
+      messages: [],
+      newMessage: ''
+    },
+    computed: { // 이 프로퍼티의 값은 data 객체 내의 프로퍼티와 달리 계산된 값이다. 그리고 Vue.js는 computed 프로퍼티에 종속된 대상을 추적하고 종속된 대상이 변경될 때 프로퍼티의 값을 업데이트한다.
+      addDisabled () {
+        return this.messages.length >= 10 || this.newMessage.length > 50
+      }
+    },
+    methods: {
+      addMessage (event) {
+        if (!this.newMessage) return // 메소드 내에서는 this로 데이터 객체의 프로퍼티에 접근 그리고 메소드를 만드는데 있어 화살표 함수 구문을 사용하면 안 된다. 왜냐하면 this로 Vue 인스턴스에 접근할 수 없게 되기 때문이다.
+        this.messages.push({text: this.newMessage, createdAt: new Date()})
+        this.newMessage = ''
+      },
+      deleteMessage (message) {
+        this.messages.splice(this.messages.indexOf(message), 1)
+      }
+    }
+  })
+</script>
+</body>
+</html>
